@@ -1,6 +1,4 @@
--- Skibidi Battle Simulator Gem GUI (Profile Style + Animations)
--- Load with: loadstring(game:HttpGet("YOUR_RAW_URL_HERE"))()
-
+-- Updated: K Logo positioned above the GUI (small)
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -9,10 +7,10 @@ screenGui.Name = "SkibidiGemHub"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Small K Logo (Above GUI)
+-- Small K Logo Button (above the GUI)
 local kButton = Instance.new("TextButton")
 kButton.Size = UDim2.new(0, 45, 0, 45)
-kButton.Position = UDim2.new(0.5, -22, 0.28, -60)
+kButton.Position = UDim2.new(0.5, -22, 0.3, -60)  -- Positioned above the main window
 kButton.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
 kButton.Text = "K"
 kButton.TextColor3 = Color3.new(1,1,1)
@@ -75,19 +73,29 @@ accent.Position = UDim2.new(0, 0, 0, 50)
 accent.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
 accent.Parent = frame
 
+-- Tween Service
 local TweenService = game:GetService("TweenService")
 local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
 local function openGUI()
     frame.Visible = true
     frame.Size = UDim2.new(0, 0, 0, 0)
-    TweenService:Create(frame, tweenInfo, {Size = UDim2.new(0, 280, 0, 360), Position = UDim2.new(0.5, -140, 0.5, -180)}):Play()
+    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TweenService:Create(frame, tweenInfo, {
+        Size = UDim2.new(0, 280, 0, 360),
+        Position = UDim2.new(0.5, -140, 0.5, -180)
+    }):Play()
 end
 
 local function closeGUI()
-    local t = TweenService:Create(frame, tweenInfo, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.5, 0)})
-    t:Play()
-    t.Completed:Connect(function() frame.Visible = false end)
+    local closeTween = TweenService:Create(frame, tweenInfo, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    })
+    closeTween:Play()
+    closeTween.Completed:Connect(function()
+        frame.Visible = false
+    end)
 end
 
 -- Draggable
@@ -97,18 +105,23 @@ topBar.InputBegan:Connect(function(input)
         dragging = true
         local dragStart = input.Position
         local startPos = frame.Position
-        local conn = game:GetService("UserInputService").InputChanged:Connect(function(inp)
+        local conn
+        conn = game:GetService("UserInputService").InputChanged:Connect(function(inp)
             if dragging and (inp.UserInputType == Enum.UserInputType.MouseMovement or inp.UserInputType == Enum.UserInputType.Touch) then
                 local delta = inp.Position - dragStart
                 frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             end
         end)
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false conn:Disconnect() end
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                conn:Disconnect()
+            end
         end)
     end
 end)
 
+-- Buttons
 local function createButton(text, amount, yPos)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0.9, 0, 0, 50)
@@ -141,8 +154,11 @@ createButton("Add 1,000 Gems", 1000, 190)
 createButton("Add 5,000 Gems", 5000, 250)
 createButton("Add 10,000 Gems", 10000, 310)
 
+-- Connections
 closeBtn.MouseButton1Click:Connect(closeGUI)
 kButton.MouseButton1Click:Connect(openGUI)
 
+-- Initial open
 openGUI()
-print("✅ Skibidi Gem Hub Loaded!")
+
+print("✅ Updated GUI with small K logo above the window!")
